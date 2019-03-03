@@ -1,0 +1,4 @@
+Properties of WebView that can be useful:
+- injectJavascript()
+- injectedJavascript
+
