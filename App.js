@@ -6,20 +6,34 @@ const url = "http://www6.plala.or.jp/private-hp/samuraidamasii/tamasiitop/roboty
 
 const javascriptToInject = () =>
 {
-  document.addEventListener("click", () =>
+  document.addEventListener("selectionchange", (event) =>
   {
-    alert("this is a test")
+    const selection = window.getSelection()
+    if (!selection.isCollapsed)
+      return
+    window.ReactNativeWebView.postMessage(JSON.stringify(
+      {
+        text: selection.anchorNode.textContent,
+        offset: selection.anchorOffset
+      }))
   })
 }
-
-const stringa = javascriptToInject.toString() + ";javascriptToInject();true"
-
-
 export default class App extends Component
 {
+  constructor(props)
+  {
+    super(props)
+    this.handleNewSelection = this.handleNewSelection.bind(this)
+  }
+
+  handleNewSelection = (selection) =>
+  {
+    // selection.offset indicates which part of the text was clicked
+    Alert.alert("message arrived: " + selection.text)
+  }
+
   render()
   {
-    // Alert.alert(stringa)
     return (
       <View style={styles.container}>
         <WebView
@@ -29,7 +43,11 @@ export default class App extends Component
           style={styles.webView}
           onLoad={() =>
           {
-            this.webview.injectJavaScript(stringa)
+            this.webview.injectJavaScript(javascriptToInject.toString() + ";javascriptToInject();true")
+          }}
+          onMessage={(event) =>
+          {
+            this.handleNewSelection(JSON.parse(event.nativeEvent.data))
           }}
         />
       </View>
