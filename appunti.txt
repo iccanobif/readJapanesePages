@@ -1,0 +1,26 @@
+alternative a sqlite che mi sta facendo diventare matto:
+per non tenere troppa roba in memoria, potrei tenere edict come xml negli asset, e anche un txt che mi faccia da "indice",
+con un csv che contenga come chiave le parole (anche coniugate) e come valori la posizione in byte nel file xml principale
+del lemma. da verificare quanto sarebbe grosso questo indice
+
+altra alternativa: Realm
+potrei popolarlo a partire dall'xml che leggo con fs.readAsset (ma non esiste!!)
+
+la parola piu' lunga che è presente su EDICT è di 37 caratteri
+sopra i 25 caratteri ce ne sono solo 32, quindi direi che come lunghezza di 
+stringhe da cercare nel dizionario limitarsi a 25 caratteri vada piu' che bene.
+eventualmente possiamo ridurre questo limite ancora di piu', perdendo comunque solo qualche frase fatta lunga.
+
+
+
+
+
+pensando invece ad un API REST:
+- getDefinitions(word) 
+- checkExistance(words) -> 
+    restituisce un array che dice true o false per ogni parola che è stata mandata
+    oppure restituisce solo le parole che effettivamente ha trovato, ordinate dalla più lunga alla
+    più corta
+
+    oppure gli mando tutta la stringona insieme con il punto che è stato cliccato e ci pensa il 
+    server a splittare in ogni modo possibile e a darmi la parola piu' grossa che ha trovato

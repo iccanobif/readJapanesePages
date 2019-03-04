@@ -1,6 +1,14 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, Alert } from 'react-native';
-import { WebView } from 'react-native-webview'
+import React, { Component } from "react"
+import
+{
+  StyleSheet,
+  View,
+  Text,
+  Alert
+} from "react-native"
+import { WebView } from "react-native-webview"
+import fs from "react-native-fs"
+const edict = require("./edict.js")
 
 const url = "http://www6.plala.or.jp/private-hp/samuraidamasii/tamasiitop/robotyuugoku/robotyuugoku.htm"
 
@@ -23,13 +31,22 @@ export default class App extends Component
   constructor(props)
   {
     super(props)
+    this.state = { stuffToWrite: "CLICK SOMEWHERE" }
     this.handleNewSelection = this.handleNewSelection.bind(this)
   }
 
-  handleNewSelection = (selection) =>
+  handleNewSelection = async (selection) =>
   {
-    // selection.offset indicates which part of the text was clicked
-    Alert.alert("message arrived: " + selection.text)
+    try
+    {
+      // selection.offset indicates which part of the text was clicked
+      const definitions = await edict.getDefinitions(selection.text)
+      this.setState({ stuffToWrite: definitions.join() })
+    }
+    catch (exc)
+    {
+      Alert.alert("errore: " + exc.message)
+    }
   }
 
   render()
@@ -41,6 +58,7 @@ export default class App extends Component
           source={{ uri: url }}
           onError={(err) => { Alert.alert(err) }}
           style={styles.webView}
+
           onLoad={() =>
           {
             this.webview.injectJavaScript(javascriptToInject.toString() + ";javascriptToInject();true")
@@ -50,18 +68,31 @@ export default class App extends Component
             this.handleNewSelection(JSON.parse(event.nativeEvent.data))
           }}
         />
+        <View style={styles.dictionaryView}>
+          <Text style={styles.dictionaryText}>
+            {this.state.stuffToWrite}
+          </Text>
+        </View>
       </View>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
   },
   webView:
   {
-    flex: 1
+    flex: 2
+  },
+  dictionaryView:
+  {
+    flex: 1,
+    backgroundColor: "black"
+  },
+  dictionaryText: {
+    color: "green",
+    fontSize: 20
   }
-});
+})
