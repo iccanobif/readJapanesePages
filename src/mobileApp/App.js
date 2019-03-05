@@ -7,8 +7,6 @@ import
   Alert
 } from "react-native"
 import { WebView } from "react-native-webview"
-import fs from "react-native-fs"
-const edict = require("./edict.js")
 
 const url = "http://www6.plala.or.jp/private-hp/samuraidamasii/tamasiitop/robotyuugoku/robotyuugoku.htm"
 
@@ -40,8 +38,8 @@ export default class App extends Component
     try
     {
       // selection.offset indicates which part of the text was clicked
-      const definitions = await edict.getDefinitions(selection.text)
-      this.setState({ stuffToWrite: definitions.join() })
+      // const definitions = await edict.getDefinitions(selection.text)
+      // this.setState({ stuffToWrite: definitions.join() })
     }
     catch (exc)
     {

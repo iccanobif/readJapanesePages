@@ -1,5 +1,6 @@
-module.exports.getSubstrings = (string, positionToInclude, maxLength) =>
+module.exports.getSubstrings = (string, positionToInclude) =>
 {
+    const maxLength = 6
     const slices = []
     for (let a = positionToInclude; a >= 0 && a > positionToInclude - maxLength; a--)
     {
@@ -9,7 +10,7 @@ module.exports.getSubstrings = (string, positionToInclude, maxLength) =>
             // console.log("b: " + b)
             slices.push(string.slice(a, b))
         }
-            
+
     }
     return slices
 }
@@ -17,4 +18,4 @@ module.exports.getSubstrings = (string, positionToInclude, maxLength) =>
 const stringa = "abcdefg"
 console.log("stringa: " + stringa)
 for (let i = 0; i < stringa.length; i++)
-    console.log(stringa[i] + ": " + module.exports.getSubstrings(stringa, i, 6))
+    console.log(stringa[i] + ": " + module.exports.getSubstrings(stringa, i))
