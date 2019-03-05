@@ -15,7 +15,7 @@ app.get("/", (req, res) =>
 
 app.get("/definitions/:word", (req, res) => 
 {
-    res.type("text/plain; charset=utf-8")
+    res.type("application/json; charset=utf-8")
     res.end(JSON.stringify(edict.getDefinitions(req.params.word)))
 })
 
@@ -39,7 +39,7 @@ app.get("/findWordSubstrings", (req, res) =>
         })
 
     console.log(output)
-    res.type("text/plain; charset=utf-8")
+    res.type("application/json; charset=utf-8")
     res.end(JSON.stringify(output))
 })
 
