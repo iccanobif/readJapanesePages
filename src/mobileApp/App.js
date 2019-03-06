@@ -4,7 +4,8 @@ import
   StyleSheet,
   View,
   Text,
-  Alert
+  Alert,
+  ScrollView
 } from "react-native"
 import { WebView } from "react-native-webview"
 
@@ -29,27 +30,28 @@ export default class App extends Component
   constructor(props)
   {
     super(props)
-    this.state = { stuffToWrite: "CLICK SOMEWHERE" }
+    this.state = {
+      dictionaryResults: null
+    }
+    // dictionaryResults is a list of objects with this shape:
+    // kanjiElements
+    // readingElements
+    // partOfSpeech
+    // glosses
+
     this.handleNewSelection = this.handleNewSelection.bind(this)
   }
 
   handleNewSelection = async (selection) =>
   {
-    try
-    {
-      // WARNING: selection.text is untrusted data. Could this be a problem?
-      const apiResponse = await fetch("http://www.iccan.us:8082/findWordSubstrings?string="
-        + encodeURIComponent(selection.text) +
-        "&startingPosition=" + selection.offset)
-      if (apiResponse.ok)
-        this.setState({ stuffToWrite: await apiResponse.text() })
-      else
-        this.setState({ stuffToWrite: "error " + apiResponse.status + " " + await apiResponse.text() })
-    }
-    catch (exc)
-    {
-      Alert.alert("errore: " + exc.message)
-    }
+    // WARNING: selection.text is untrusted data. Could this be a problem?
+    const apiResponse = await fetch("http://www.iccan.us:8082/findWordSubstrings?string="
+      + encodeURIComponent(selection.text) +
+      "&startingPosition=" + selection.offset)
+    if (apiResponse.ok)
+      this.setState({ dictionaryResults: await apiResponse.json() })
+    else
+      this.setState({ stuffToWrite: "error " + apiResponse.status + " " + await apiResponse.text() })
   }
 
   render()
@@ -71,11 +73,31 @@ export default class App extends Component
             this.handleNewSelection(JSON.parse(event.nativeEvent.data))
           }}
         />
-        <View style={styles.dictionaryView}>
-          <Text style={styles.dictionaryText}>
-            {this.state.stuffToWrite.toString()}
-          </Text>
-        </View>
+        <ScrollView style={styles.dictionaryView}>
+          {this.state.dictionaryResults == null
+            ? <Text style={styles.dictionaryText}>
+              "CLICK SOMEWHERE"
+              </Text>
+            : this.state.dictionaryResults.map(d =>
+              <View key={d.word}>
+                <Text style={styles.dictionaryText}>
+                  {d.word + "\n"}
+                  {d.definitions.map((definition, definitionIndex) =>
+                    <Text key={definitionIndex}>
+                      {
+                        definition.kanjiElements.length == 0
+                          ? ""
+                          : "Kanji:" + definition.kanjiElements.join() + "\n"
+                      }
+                      Readings: {definition.readingElements.join()} {"\n"}
+                      Glosses: {definition.glosses.join()}
+                    </Text>
+                  )}
+                </Text>
+              </View>)
+            // : JSON.stringify(this.state.dictionaryResults)
+          }
+        </ScrollView>
       </View>
     )
   }
