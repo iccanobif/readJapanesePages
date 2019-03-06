@@ -37,9 +37,14 @@ export default class App extends Component
   {
     try
     {
-      // selection.offset indicates which part of the text was clicked
-      // const definitions = await edict.getDefinitions(selection.text)
-      // this.setState({ stuffToWrite: definitions.join() })
+      // WARNING: selection.text is untrusted data. Could this be a problem?
+      const apiResponse = await fetch("http://www.iccan.us:8082/findWordSubstrings?string="
+        + encodeURIComponent(selection.text) +
+        "&startingPosition=" + selection.offset)
+      if (apiResponse.ok)
+        this.setState({ stuffToWrite: await apiResponse.text() })
+      else
+        this.setState({ stuffToWrite: "error " + apiResponse.status + " " + await apiResponse.text() })
     }
     catch (exc)
     {
@@ -68,7 +73,7 @@ export default class App extends Component
         />
         <View style={styles.dictionaryView}>
           <Text style={styles.dictionaryText}>
-            {this.state.stuffToWrite}
+            {this.state.stuffToWrite.toString()}
           </Text>
         </View>
       </View>
